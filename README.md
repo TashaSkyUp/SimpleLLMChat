@@ -1,0 +1,1 @@
+This project uses code from the Auto-GPT project ([https://github.com/Torantulino/Auto-GPT](https://github.com/Torantulino/Auto-GPT)) specifically the memory scripts, which is licensed under the MIT license. See the LICENSE file for more details.

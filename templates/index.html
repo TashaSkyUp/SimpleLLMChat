@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Chatbot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-size: 16px;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        h2 {
+
+            margin: 1rem 0;
+            text-align: center;
+        }
+        h5 {
+
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        form {
+            margin: 1rem 0;
+        }
+
+        input[type="text"] {
+            display: block;
+            width: 100%;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+
+        button[type="submit"],
+        button[type="button"] {
+            display: block;
+            width: 100%;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #response-container {
+            margin: 1rem 0;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+        }
+
+        #response-container div {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #ccc;
+        }
+
+        #done-button {
+            display: none;
+        }
+
+        @media only screen and (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            input[type="text"],
+            button[type="submit"],
+            button[type="button"] {
+                font-size: 0.9rem;
+            }
+
+            #response-container {
+                margin: 0.5rem 0;
+                padding: 0.5rem;
+            }
+
+            #done-button {
+                display: block;
+                margin: 0.5rem 0;
+                font-size: 0.9rem;
+                background-color: #dc3545;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<h1>Chatbot by Tasha Upchurch via OpenAI</h1>
+<h2>Contact your rep with a nice letter!</h2>
+<h5>Make sure to double-check the bill numbers and your reps names!</h5>
+<h5>type start to start a new session, press done when you are done!</h5>
+
+<div id="response-container"></div>
+
+<form id="message-form">
+    <input type="text" id="message-input" placeholder="Type your message...">
+    <button type="submit">Send</button>
+</form>
+
+<button id="done-button" type="button">Done</button>
+<h5>you can tell it to word the letter more strongly or personalize it however you like.</h5>
+<script>
+   const form = document.querySelector('#message-form');
+const input = document.querySelector('#message-input');
+const container = document.querySelector('#response-container');
+const doneButton = document.querySelector('#done-button');
+let id; // create a variable to store the id
+
+form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const message = input.value;
+    input.value = '';
+
+    const response = await fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            message: message,
+            id: id // send the id received from the server
+        })
+    });
+
+    const data = await response.json();
+    id = data.id; // update the id with the new value received from the server
+
+    const messageDiv = document.createElement('div');
+    const messageText = document.createElement('p');
+    messageText.innerText = message;
+    messageDiv.appendChild(messageText);
+    container.appendChild(messageDiv);
+
+    const responseDiv = document.createElement('div');
+    responseDiv.style.backgroundColor = 'lightgreen';
+    const responseText = document.createElement('p');
+    responseText.innerText = data.response;
+    responseDiv.appendChild(responseText);
+    container.appendChild(responseDiv);
+});
+
+doneButton.addEventListener('click', () => {
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+});
+
+</script>
+</body>
+</html>
